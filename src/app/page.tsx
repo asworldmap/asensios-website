@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Plane, Compass, Zap, Root, Heart, Coffee } from 'lucide-react';
+import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Plane, Compass, Zap, Heart, Coffee } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
