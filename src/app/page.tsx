@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Zap, User, ArrowRight } from 'lucide-react';
+import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Zap, Star, ShieldCheck, ArrowRight, Plane } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -10,7 +10,6 @@ export default function Home() {
     const [showContact, setShowContact] = useState(false);
 
     useEffect(() => {
-        // Super safe animation trigger
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1 } });
 
@@ -20,10 +19,9 @@ export default function Home() {
                     y: 20,
                     opacity: 0,
                     stagger: 0.1,
-                    clearProps: "all" // Ensures buttons don't stay hidden if something glitches
+                    clearProps: "all"
                 }, "-=0.5");
 
-            // Subtle background drift
             gsap.to(".glow-bg", {
                 opacity: 0.6,
                 duration: 4,
@@ -59,7 +57,7 @@ export default function Home() {
                     setStatus('');
                 }, 3000);
             } else {
-                setStatus('Error al enviar. Inténtalo de nuevo.');
+                setStatus('Error al enviar. Revisa el SMTP.');
             }
         } catch (err) {
             setStatus('Error de conexión.');
@@ -75,25 +73,18 @@ export default function Home() {
             color: "border-blue-500/20 hover:bg-blue-500/5"
         },
         {
-            name: "Instagram Insights",
+            name: "Instagram Personal",
             url: "https://instagram.com/asensios",
             icon: <Instagram size={20} />,
-            title: "Visión Personal",
+            title: "Visión Diaria",
             color: "border-pink-500/20 hover:bg-pink-500/5"
         },
         {
-            name: "Global Strategy",
-            url: "#",
-            icon: <Globe size={20} />,
-            title: "Consultoría Internacional",
-            color: "border-teal-500/20 hover:bg-teal-500/5"
-        },
-        {
-            name: "Strategy & Projects",
-            url: "#",
-            icon: <Briefcase size={20} />,
-            title: "Gestión y Resultados",
-            color: "border-zinc-500/20 hover:bg-white/5"
+            name: "Próxima aventura: SWY Japan",
+            url: "https://www.swy.international/",
+            icon: <Plane size={20} />,
+            title: "Ship for World Youth Program",
+            color: "border-amber-500/20 hover:bg-amber-500/5"
         },
     ];
 
@@ -166,7 +157,7 @@ export default function Home() {
                         onClick={() => setShowContact(!showContact)}
                         className="link-card w-full p-5 rounded-3xl bg-white text-black font-black hover:bg-teal-400 transition-all duration-500 flex items-center justify-between shadow-2xl overflow-hidden group"
                     >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 text-left">
                             <div className="p-3 rounded-2xl bg-black/5">
                                 <Mail size={22} />
                             </div>
@@ -183,15 +174,9 @@ export default function Home() {
                             <Zap size={14} className="fill-teal-500" /> Nueva Colaboración
                         </h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="flex flex-col gap-1">
-                                <input name="name" placeholder="Nombre completo" required className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600" />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <input name="email" type="email" placeholder="Email de contacto" required className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600" />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <textarea name="message" placeholder="¿Cómo puedo ayudarte?" required rows={4} className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600 resize-none" />
-                            </div>
+                            <input name="name" placeholder="Nombre completo" required className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600" />
+                            <input name="email" type="email" placeholder="Email de contacto" required className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600" />
+                            <textarea name="message" placeholder="¿Cómo puedo ayudarte?" required rows={4} className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 outline-none focus:border-teal-500/50 transition-all text-sm placeholder:text-zinc-600 resize-none" />
                             <button type="submit" className="w-full bg-teal-500 text-black font-black py-4 rounded-2xl hover:brightness-110 transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-lg shadow-teal-500/10">
                                 {status || 'ENVIAR MENSAJE'} <Send size={18} />
                             </button>
