@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Linkedin, Instagram, Bug, Send, Globe, ChevronRight, Mail, ExternalLink } from 'lucide-react';
+import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, User } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -53,10 +53,10 @@ export default function Home() {
     };
 
     const links = [
-        { name: "Data Spider Web", url: "https://spider.asensios.com", icon: <Bug size={20} />, color: "from-teal-500/20 to-emerald-500/20" },
         { name: "LinkedIn Professional", url: "https://linkedin.com/in/asensios", icon: <Linkedin size={20} />, color: "from-blue-600/20 to-indigo-600/20" },
         { name: "Instagram Personal", url: "https://instagram.com/asensios", icon: <Instagram size={20} />, color: "from-pink-500/20 to-orange-500/20" },
-        { name: "Global Consulting", url: "#", icon: <Globe size={20} />, color: "from-zinc-800 to-zinc-900" },
+        { name: "Global Strategy & Projects", url: "#", icon: <Briefcase size={20} />, color: "from-teal-500/20 to-emerald-500/20" },
+        { name: "International Consulting", url: "#", icon: <Globe size={20} />, color: "from-zinc-800 to-zinc-900" },
     ];
 
     return (
@@ -79,7 +79,6 @@ export default function Home() {
                                 fill
                                 className="object-cover"
                                 onError={(e) => {
-                                    // Fallback if image not found
                                     const target = e.target as HTMLImageElement;
                                     target.src = "https://ui-avatars.com/api/?name=Asensio+Sabater&background=14b8a6&color=fff&size=128";
                                 }}
