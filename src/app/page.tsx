@@ -128,10 +128,11 @@ export default function Home() {
                         <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full scale-110 animate-pulse"></div>
                         <div className="relative w-28 h-28 rounded-full p-[1.5px] bg-gradient-to-tr from-white/20 to-transparent border border-white/10 shadow-3xl overflow-hidden bg-zinc-900">
                             <Image
-                                src="/perfil1.png"
+                                src="/perfil1.jpg"
                                 alt="Asensio Sabater"
                                 fill
                                 className="object-cover"
+                                priority
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = "https://ui-avatars.com/api/?name=Asensio+Sabater&background=0a0a0a&color=fff&size=256&bold=true";
