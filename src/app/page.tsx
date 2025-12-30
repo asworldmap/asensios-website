@@ -1,68 +1,82 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Zap, Star, ShieldCheck } from 'lucide-react';
+import { Linkedin, Instagram, Send, Globe, ChevronRight, Mail, Briefcase, Zap, Star, ShieldCheck, Copy, Check } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [status, setStatus] = useState('');
     const [showContact, setShowContact] = useState(false);
-    const sphereRef = useRef<HTMLDivElement>(null);
+    const [copied, setCopied] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Ensure styles are applied before starting animations
+        // Hide loading screen after a short delay to ensure everything is ready
+        const timer = setTimeout(() => setIsLoading(false), 800);
+
         const ctx = gsap.context(() => {
-            // Clear any initial hidden states
-            gsap.set(".content-wrapper", { visibility: "visible" });
+            // Entrance animations
+            const tl = gsap.timeline();
 
-            // Profile Area entrance
-            gsap.from(".profile-area", {
-                duration: 1.2,
-                y: 20,
-                opacity: 0,
-                ease: "power3.out"
-            });
+            tl.to(".loading-overlay", { opacity: 0, duration: 0.5, pointerEvents: "none" })
+                .from(".profile-area", { duration: 1, y: 30, opacity: 0, ease: "power4.out" }, "-=0.2")
+                .from(".link-item", {
+                    duration: 0.8,
+                    y: 20,
+                    opacity: 0,
+                    stagger: 0.08,
+                    ease: "power3.out"
+                }, "-=0.5")
+                .from(".footer-info", { opacity: 0, duration: 1 }, "-=0.3");
 
-            // Link items entrance
-            gsap.from(".link-item", {
-                duration: 0.8,
-                y: 15,
-                opacity: 0,
-                stagger: 0.1,
-                ease: "power2.out",
-                delay: 0.4
-            });
-
-            // Background glows pulse
+            // Continuous ambient animations
             gsap.to(".bg-glow-1", {
-                scale: 1.2,
-                duration: 8,
+                x: "10%",
+                y: "5%",
+                duration: 12,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+            gsap.to(".bg-glow-2", {
+                x: "-10%",
+                y: "-5%",
+                duration: 15,
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut"
             });
         }, containerRef);
 
-        return () => ctx.revert();
+        return () => {
+            clearTimeout(timer);
+            ctx.revert();
+        };
     }, []);
 
     const handleMouseMove = (e: React.MouseEvent) => {
         const { clientX, clientY } = e;
-        const xPos = (clientX / window.innerWidth - 0.5) * 15;
-        const yPos = (clientY / window.innerHeight - 0.5) * 15;
+        const xPos = (clientX / window.innerWidth - 0.5) * 12;
+        const yPos = (clientY / window.innerHeight - 0.5) * 12;
 
         gsap.to(".magnetic-layers", {
             x: xPos,
             y: yPos,
-            duration: 1.5,
+            duration: 1.2,
             ease: "power2.out"
         });
     };
 
+    const copyEmail = () => {
+        navigator.clipboard.writeText("hola@asensios.com");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setStatus('Enviando...');
+        setStatus('enviando...');
         const formData = new FormData(e.currentTarget);
         const data = {
             name: formData.get('name'),
@@ -76,7 +90,7 @@ export default function Home() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-            if (res.ok) setStatus('¡Éxito! Hablamos pronto.');
+            if (res.ok) setStatus('¡Mensaje enviado!');
             else setStatus('Error al enviar.');
         } catch (err) {
             setStatus('Error al enviar.');
@@ -84,30 +98,35 @@ export default function Home() {
     };
 
     const links = [
-        { name: "LinkedIn Professional", url: "https://linkedin.com/in/asensios", icon: <Linkedin size={20} />, color: "from-blue-600/20 to-indigo-600/20", label: "Network" },
-        { name: "Instagram Insights", url: "https://instagram.com/asensios", icon: <Instagram size={20} />, color: "from-pink-500/20 to-rose-500/20", label: "Personal" },
-        { name: "Global Strategy & Projects", url: "#", icon: <Briefcase size={20} />, color: "from-teal-500/20 to-emerald-500/20", label: "Expertise" },
-        { name: "International Consulting", url: "#", icon: <Globe size={20} />, color: "from-amber-500/10 to-orange-500/20", label: "Solutions" },
+        { name: "LinkedIn Professional", url: "https://linkedin.com/in/asensios", icon: <Linkedin size={18} />, color: "from-blue-600/10 to-indigo-600/10", tag: "Strategy" },
+        { name: "Instagram Personal", url: "https://instagram.com/asensios", icon: <Instagram size={18} />, color: "from-pink-500/10 to-rose-500/10", tag: "Life" },
+        { name: "Global Projects", url: "#", icon: <Briefcase size={18} />, color: "from-teal-500/10 to-emerald-500/10", tag: "Innovation" },
+        { name: "International Consulting", url: "#", icon: <Globe size={18} />, color: "from-zinc-100/5 to-zinc-100/10", tag: "Vision" },
     ];
 
     return (
         <main
             ref={containerRef}
             onMouseMove={handleMouseMove}
-            className="min-h-screen bg-[#020202] text-zinc-100 flex flex-col items-center justify-center p-6 overflow-hidden"
+            className="min-h-screen bg-[#050505] text-zinc-200 flex flex-col items-center justify-center p-6 overflow-hidden selection:bg-teal-500/30"
         >
-            {/* Dynamic Ambient Background */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none magnetic-layers">
-                <div className="bg-glow-1 absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-teal-500/10 blur-[120px] opacity-30"></div>
-                <div className="bg-glow-2 absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[120px] opacity-20"></div>
+            {/* Loading Overlay */}
+            <div className="loading-overlay fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-teal-500/20 border-t-teal-500 rounded-full animate-spin"></div>
             </div>
 
-            <div className="content-wrapper max-w-md w-full relative z-10">
+            {/* Modern Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none magnetic-layers">
+                <div className="bg-glow-1 absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-teal-500/[0.07] blur-[120px]"></div>
+                <div className="bg-glow-2 absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] rounded-full bg-blue-600/[0.05] blur-[120px]"></div>
+            </div>
+
+            <div className="max-w-[400px] w-full relative z-10">
                 {/* Profile Section */}
                 <header className="profile-area mb-10 flex flex-col items-center text-center">
-                    <div className="relative mb-6 group">
-                        <div className="absolute -inset-2 bg-teal-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
-                        <div className="relative w-32 h-32 rounded-full p-[2px] bg-white/10 border border-white/5 shadow-2xl overflow-hidden">
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full scale-110 animate-pulse"></div>
+                        <div className="relative w-28 h-28 rounded-full p-[1.5px] bg-gradient-to-tr from-white/20 to-transparent border border-white/10 shadow-3xl overflow-hidden bg-zinc-900">
                             <Image
                                 src="/perfil1.png"
                                 alt="Asensio Sabater"
@@ -115,84 +134,84 @@ export default function Home() {
                                 className="object-cover"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
-                                    target.src = "https://ui-avatars.com/api/?name=Asensio+Sabater&background=14b8a6&color=fff&size=256&bold=true";
+                                    target.src = "https://ui-avatars.com/api/?name=Asensio+Sabater&background=0a0a0a&color=fff&size=256&bold=true";
                                 }}
                             />
                         </div>
-                        <div className="absolute bottom-1 right-1 bg-teal-500 text-black p-1 rounded-full border-2 border-[#020202]">
-                            <ShieldCheck size={14} />
-                        </div>
                     </div>
 
-                    <h1 className="text-3xl font-black tracking-tighter mb-2 uppercase text-white">
+                    <h1 className="text-2xl font-black tracking-tight mb-1 text-white uppercase italic">
                         Asensio Sabater
                     </h1>
-                    <p className="text-xs font-bold tracking-[0.3em] text-teal-500 uppercase mb-3 px-4 py-1 rounded-full bg-teal-500/5 border border-teal-500/10">
-                        Strategic Innovation
-                    </p>
-                    <p className="text-zinc-500 text-sm max-w-[260px] leading-relaxed">
-                        Connecting vision with execution in global projects.
-                    </p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/5 border border-teal-500/10 mb-4">
+                        <Zap size={12} className="text-teal-500" />
+                        <p className="text-[10px] font-bold tracking-[0.2em] text-teal-400 uppercase">Strategic Innovation</p>
+                    </div>
                 </header>
 
-                {/* Links List */}
-                <div className="w-full space-y-3 mb-10">
+                {/* Links Grid */}
+                <div className="w-full space-y-3 mb-8">
                     {links.map((link, i) => (
                         <a
                             key={i}
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`link-item group relative block w-full p-4 rounded-2xl bg-gradient-to-br ${link.color} border border-white/5 hover:border-white/15 transition-all duration-300 backdrop-blur-sm`}
+                            className={`link-item group relative block w-full p-4 rounded-2xl bg-gradient-to-br ${link.color} border border-white/[0.05] hover:border-white/20 transition-all duration-500 backdrop-blur-md overflow-hidden`}
                         >
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between relative z-10">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-2.5 rounded-xl bg-zinc-950/50 text-teal-400 border border-white/5 transition-transform group-hover:scale-110">
+                                    <div className="p-2.5 rounded-xl bg-black/40 text-teal-400 border border-white/5 transition-all group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-black">
                                         {link.icon}
                                     </div>
                                     <div className="flex flex-col text-left">
-                                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest leading-none mb-1">{link.label}</span>
-                                        <span className="font-bold tracking-tight text-zinc-200">{link.name}</span>
+                                        <span className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest leading-none mb-1">{link.tag}</span>
+                                        <span className="text-sm font-bold tracking-tight text-white/90">{link.name}</span>
                                     </div>
                                 </div>
-                                <ChevronRight size={16} className="text-zinc-600 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all" />
+                                <ChevronRight size={16} className="text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
                             </div>
                         </a>
                     ))}
 
-                    {/* Contact Toggle */}
-                    <button
-                        onClick={() => setShowContact(!showContact)}
-                        className="link-item group w-full p-4 rounded-2xl bg-zinc-100 text-black font-black hover:bg-teal-400 transition-all duration-300 flex items-center justify-between"
-                    >
-                        <div className="flex items-center gap-4 text-left">
-                            <div className="p-2.5 rounded-xl bg-black/5">
-                                <Mail size={20} />
-                            </div>
-                            <span className="uppercase text-sm tracking-tight">Direct Access</span>
-                        </div>
-                        <Send size={16} className={`transition-transform duration-500 ${showContact ? 'rotate-90' : ''}`} />
-                    </button>
+                    {/* Email Quick Action */}
+                    <div className="link-item flex gap-2">
+                        <button
+                            onClick={() => setShowContact(!showContact)}
+                            className="flex-1 p-4 rounded-2xl bg-white text-black font-black hover:bg-teal-400 transition-all duration-300 flex items-center justify-between text-xs"
+                        >
+                            <span className="uppercase tracking-tight">Contacto</span>
+                            <Mail size={16} />
+                        </button>
+                        <button
+                            onClick={copyEmail}
+                            className="p-4 rounded-2xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white transition-all flex items-center justify-center relative"
+                            title="Copiar email"
+                        >
+                            {copied ? <Check size={18} className="text-teal-500" /> : <Copy size={18} />}
+                            {copied && <span className="absolute -top-10 bg-teal-500 text-black text-[10px] font-bold px-2 py-1 rounded">Copiado</span>}
+                        </button>
+                    </div>
                 </div>
 
-                {/* Contact Form Container */}
-                <div className={`w-full transition-all duration-500 ease-out overflow-hidden ${showContact ? 'max-h-[500px] opacity-100 mb-10' : 'max-h-0 opacity-0'}`}>
-                    <div className="bg-zinc-900/40 p-6 rounded-3xl border border-white/5 backdrop-blur-xl">
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <input name="name" placeholder="Name" required className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/30 transition-all text-sm" />
-                            <input name="email" type="email" placeholder="Email" required className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/30 transition-all text-sm" />
-                            <textarea name="message" placeholder="Message..." required rows={3} className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/30 transition-all text-sm resize-none" />
-                            <button type="submit" className="w-full bg-teal-500 text-black font-black py-3 rounded-xl hover:brightness-110 transition-all text-sm">
-                                {status || 'SEND MESSAGE'}
+                {/* Contact Form */}
+                <div className={`w-full transition-all duration-700 ease-[cubic-bezier(0.23, 1, 0.32, 1)] overflow-hidden ${showContact ? 'max-h-[500px] opacity-100 mb-8' : 'max-h-0 opacity-0'}`}>
+                    <div className="bg-zinc-950/50 p-6 rounded-3xl border border-white/5 backdrop-blur-2xl">
+                        <form onSubmit={handleSubmit} className="space-y-3">
+                            <input name="name" placeholder="Tu nombre" required className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/40 transition-all text-xs text-white" />
+                            <input name="email" type="email" placeholder="Tu email" required className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/40 transition-all text-xs text-white" />
+                            <textarea name="message" placeholder="Mensaje..." required rows={3} className="w-full bg-white/5 border border-white/5 rounded-xl p-3 outline-none focus:border-teal-500/40 transition-all text-xs text-white resize-none" />
+                            <button type="submit" className="w-full bg-teal-500 text-black font-black py-3 rounded-xl hover:brightness-110 transition-all text-xs uppercase tracking-tighter">
+                                {status || 'Enviar ahora'}
                             </button>
                         </form>
                     </div>
                 </div>
 
-                {/* Simple Footer */}
-                <footer className="text-center">
-                    <p className="text-[8px] tracking-[0.4em] text-zinc-700 font-bold uppercase opacity-50">
-                        © 2025 ASENSIO SABATER
+                {/* Footer info */}
+                <footer className="footer-info text-center">
+                    <p className="text-[7px] tracking-[0.5em] text-zinc-800 font-bold uppercase">
+                        Strategic Personal Branding © 2025
                     </p>
                 </footer>
             </div>
